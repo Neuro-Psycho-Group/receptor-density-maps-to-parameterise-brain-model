@@ -1,0 +1,1632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Science Behind Your SCZ Model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;1,8..60,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0b0f;
+  --bg2: #0f1117;
+  --bg3: #141720;
+  --card: #181c26;
+  --border: #252a3a;
+  --amber: #f5a623;
+  --amber-dim: #a06810;
+  --amber-glow: rgba(245,166,35,0.12);
+  --blue: #4a9eff;
+  --blue-dim: rgba(74,158,255,0.15);
+  --green: #5ecf8a;
+  --red: #e05c5c;
+  --purple: #9b7fe8;
+  --text: #d8dce8;
+  --text-dim: #7a8099;
+  --text-bright: #f0f2f8;
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans: 'Source Serif 4', serif;
+  --mono: 'IBM Plex Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ── NOISE TEXTURE ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--amber-dim); border-radius: 2px; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex; align-items: center; gap: 2rem;
+  padding: 1rem 3rem;
+  background: rgba(10,11,15,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--amber);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.nav-links {
+  display: flex; gap: 1.5rem; list-style: none;
+  margin-left: auto;
+}
+
+.nav-links a {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  text-decoration: none;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--amber); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+  padding: 8rem 10vw 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(245,166,35,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,166,35,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 30%, transparent 100%);
+}
+
+.hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+}
+.hero-orb-1 { width: 600px; height: 600px; background: rgba(245,166,35,0.06); top: -10%; right: -5%; }
+.hero-orb-2 { width: 400px; height: 400px; background: rgba(74,158,255,0.05); bottom: 5%; left: 10%; }
+
+.hero-tag {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--amber);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.2s ease forwards;
+}
+
+.hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(2.4rem, 5vw, 4.5rem);
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--text-bright);
+  max-width: 800px;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.4s ease forwards;
+}
+
+.hero h1 em {
+  font-style: italic;
+  color: var(--amber);
+}
+
+.hero-sub {
+  font-size: 1.05rem;
+  color: var(--text-dim);
+  max-width: 600px;
+  line-height: 1.8;
+  margin-bottom: 3rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.6s ease forwards;
+}
+
+.hero-papers {
+  display: flex; gap: 1rem; flex-wrap: wrap;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.8s ease forwards;
+}
+
+.paper-pill {
+  display: flex; align-items: center; gap: 0.6rem;
+  padding: 0.5rem 1rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.paper-pill:hover { border-color: var(--amber); color: var(--amber); }
+.paper-pill .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+}
+
+/* ── SECTION COMMON ── */
+.section {
+  padding: 7rem 10vw;
+  position: relative;
+}
+
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: 0 10vw;
+}
+
+.section-num {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--amber-dim);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+  display: flex; align-items: center; gap: 0.75rem;
+}
+.section-num::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  max-width: 80px;
+}
+
+.section-title {
+  font-family: var(--serif);
+  font-size: clamp(1.8rem, 3.5vw, 3rem);
+  font-weight: 400;
+  color: var(--text-bright);
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+
+.section-meta {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin-bottom: 2.5rem;
+}
+
+/* ── PAPER LAYOUT ── */
+.paper-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .paper-layout { grid-template-columns: 1fr; gap: 2rem; }
+}
+
+.paper-content p {
+  color: var(--text);
+  margin-bottom: 1.2rem;
+}
+
+.callout {
+  border-left: 3px solid var(--amber);
+  padding: 1rem 1.5rem;
+  background: var(--amber-glow);
+  border-radius: 0 4px 4px 0;
+  margin: 1.5rem 0;
+  font-size: 0.95rem;
+}
+
+.callout strong { color: var(--amber); }
+
+.jargon {
+  display: inline;
+  border-bottom: 1px dashed var(--amber-dim);
+  cursor: help;
+  position: relative;
+  color: var(--amber);
+}
+
+.jargon-tip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--card);
+  border: 1px solid var(--amber-dim);
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+  color: var(--text);
+  width: 260px;
+  z-index: 10;
+  line-height: 1.5;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.jargon:hover .jargon-tip { display: block; }
+
+/* ── INTERACTIVE DIAGRAMS ── */
+.diagram-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2rem;
+  position: relative;
+}
+
+.diagram-title {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--amber);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── WONG-WANG NODE DIAGRAM ── */
+.brain-network {
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 340px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.node {
+  position: absolute;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  line-height: 1.2;
+}
+
+.node-region {
+  width: 56px; height: 56px;
+  background: var(--card);
+  border: 2px solid var(--border);
+  color: var(--text-dim);
+}
+
+.node-region:hover, .node-region.active {
+  border-color: var(--amber);
+  background: var(--amber-glow);
+  color: var(--amber);
+  transform: scale(1.15);
+  z-index: 5;
+}
+
+.edge {
+  position: absolute;
+  background: var(--border);
+  height: 1px;
+  transform-origin: left center;
+  transition: background 0.3s, opacity 0.3s;
+}
+
+.edge.strong { background: rgba(245,166,35,0.5); height: 2px; }
+.edge.weak { background: rgba(245,166,35,0.15); opacity: 0.5; }
+
+.network-label {
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  margin-top: 1rem;
+}
+
+/* ── G SWEEP INTERACTIVE ── */
+.g-sweep-container {
+  padding: 0.5rem 0;
+}
+
+.g-slider-wrap {
+  margin: 1rem 0;
+}
+
+.g-slider-label {
+  display: flex; justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  margin-bottom: 0.5rem;
+}
+
+.g-slider-label span:last-child { color: var(--amber); }
+
+input[type=range] {
+  width: 100%;
+  -webkit-appearance: none;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--amber);
+  border: 2px solid var(--bg);
+  cursor: pointer;
+  box-shadow: 0 0 8px var(--amber);
+}
+
+.g-curve {
+  width: 100%;
+  height: 120px;
+  position: relative;
+  margin: 1rem 0;
+}
+
+.g-curve-svg { width: 100%; height: 100%; }
+
+.g-region-label {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  text-align: center;
+  padding: 0.5rem;
+  border-radius: 3px;
+  margin-top: 0.5rem;
+}
+
+/* ── PET MAP DIAGRAM ── */
+.pet-map {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 3px;
+  margin: 1rem 0;
+}
+
+.pet-cell {
+  aspect-ratio: 1;
+  border-radius: 2px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  position: relative;
+}
+.pet-cell:hover {
+  transform: scale(1.4);
+  z-index: 5;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.receptor-tabs {
+  display: flex; gap: 0.5rem; margin-bottom: 1rem;
+}
+
+.rtab {
+  padding: 0.35rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-dim);
+  transition: all 0.2s;
+}
+.rtab.active, .rtab:hover { border-color: var(--amber); color: var(--amber); background: var(--amber-glow); }
+
+/* ── SCHIZOPHRENIA SECTION ── */
+#paper3 { background: var(--bg2); }
+
+.mechanism-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+@media (max-width: 800px) {
+  .mechanism-cards { grid-template-columns: 1fr; }
+}
+
+.mcard {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.5rem;
+  transition: border-color 0.3s, transform 0.3s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.mcard::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--card-accent, var(--border));
+  transition: opacity 0.3s;
+}
+
+.mcard:hover {
+  border-color: var(--card-accent);
+  transform: translateY(-3px);
+}
+
+.mcard-icon {
+  font-size: 1.8rem;
+  margin-bottom: 0.75rem;
+}
+
+.mcard h3 {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  color: var(--text-bright);
+  margin-bottom: 0.5rem;
+  font-weight: 400;
+}
+
+.mcard p {
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+.mcard-tag {
+  display: inline-block;
+  margin-top: 0.75rem;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 2px;
+  background: var(--bg2);
+  color: var(--card-accent);
+  border: 1px solid var(--card-accent);
+}
+
+/* ── HOW IT ALL CONNECTS ── */
+.pipeline {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;
+  padding: 2rem 0;
+  margin-top: 2rem;
+}
+
+.pipe-step {
+  flex-shrink: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.25rem 1.5rem;
+  min-width: 160px;
+  text-align: center;
+  transition: border-color 0.3s;
+}
+
+.pipe-step:hover { border-color: var(--amber); }
+
+.pipe-step-num {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--amber);
+  letter-spacing: 0.1em;
+  margin-bottom: 0.4rem;
+}
+
+.pipe-step-label {
+  font-family: var(--serif);
+  font-size: 0.9rem;
+  color: var(--text-bright);
+}
+
+.pipe-step-sub {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin-top: 0.25rem;
+  font-family: var(--mono);
+}
+
+.pipe-arrow {
+  flex-shrink: 0;
+  padding: 0 0.75rem;
+  color: var(--amber-dim);
+  font-size: 1.2rem;
+}
+
+/* ── FORMULA BOXES ── */
+.formula {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1.25rem 1.5rem;
+  margin: 1.25rem 0;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--text-bright);
+  overflow-x: auto;
+  position: relative;
+}
+
+.formula-label {
+  position: absolute;
+  top: -0.6rem; left: 1rem;
+  background: var(--bg);
+  padding: 0 0.5rem;
+  font-size: 0.65rem;
+  color: var(--amber);
+  letter-spacing: 0.08em;
+}
+
+.formula .comment {
+  color: var(--text-dim);
+}
+
+/* ── GLOSSARY SECTION ── */
+.glossary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.gterm {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1rem 1.25rem;
+  transition: border-color 0.2s;
+}
+.gterm:hover { border-color: var(--amber); }
+
+.gterm-word {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--amber);
+  margin-bottom: 0.3rem;
+}
+
+.gterm-def {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+/* ── FC CORRELATION VISUAL ── */
+.fc-matrix {
+  display: grid;
+  gap: 1px;
+  margin: 1rem auto;
+  width: fit-content;
+}
+
+.fc-cell {
+  width: 14px; height: 14px;
+  border-radius: 1px;
+  transition: transform 0.15s;
+  cursor: crosshair;
+}
+.fc-cell:hover { transform: scale(1.6); z-index: 5; position: relative; }
+
+/* ── FOOTER ── */
+footer {
+  padding: 3rem 10vw;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 1rem;
+}
+
+.footer-note {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+.footer-refs a {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color 0.2s;
+  margin-top: 0.3rem;
+}
+.footer-refs a:hover { color: var(--amber); }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── EXCITATORY / INHIBITORY TOGGLE ── */
+.ei-demo {
+  display: flex; gap: 1rem; flex-wrap: wrap; margin: 1rem 0;
+}
+
+.ei-box {
+  flex: 1; min-width: 140px;
+  padding: 1rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.ei-box.exc { border-color: var(--amber); background: rgba(245,166,35,0.08); }
+.ei-box.inh { border-color: var(--blue); background: rgba(74,158,255,0.08); }
+
+.ei-box-label {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  margin-bottom: 0.4rem;
+}
+
+.ei-box.exc .ei-box-label { color: var(--amber); }
+.ei-box.inh .ei-box-label { color: var(--blue); }
+
+.ei-box-val {
+  font-family: var(--mono);
+  font-size: 1.4rem;
+  font-weight: 500;
+}
+
+.ei-box.exc .ei-box-val { color: var(--amber); }
+.ei-box.inh .ei-box-val { color: var(--blue); }
+
+.ei-result {
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin-top: 0.75rem;
+  text-align: center;
+  transition: all 0.5s;
+}
+
+.balance-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--blue) var(--inh-pct, 50%), var(--amber) var(--inh-pct, 50%));
+  margin: 0.75rem 0;
+  transition: all 0.5s;
+}
+
+/* scrolled section highlight in nav */
+.nav-links a.current { color: var(--amber); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">SCZ Model — Paper Guide</div>
+  <ul class="nav-links">
+    <li><a href="#paper1">Deco 2013</a></li>
+    <li><a href="#paper2">Demirtaş 2019</a></li>
+    <li><a href="#paper3">Hansen 2022</a></li>
+    <li><a href="#your-model">Your Model</a></li>
+    <li><a href="#glossary">Glossary</a></li>
+  </ul>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════════ HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+
+  <div class="hero-tag">Research Foundation — Three Papers</div>
+
+  <h1>The brain as a <em>living simulation</em>:<br>
+  how three papers built your SCZ model</h1>
+
+  <p class="hero-sub">
+    You're building a whole-brain computational model to test which receptor system goes wrong in schizophrenia.
+    These are the three papers that made that possible — explained without jargon.
+  </p>
+
+  <div class="hero-papers">
+    <a href="#paper1" class="paper-pill">
+      <span class="dot" style="background:var(--amber)"></span>
+      Deco et al. 2013 — J. Neuroscience
+    </a>
+    <a href="#paper2" class="paper-pill">
+      <span class="dot" style="background:var(--blue)"></span>
+      Demirtaş et al. 2019 — Neuron
+    </a>
+    <a href="#paper3" class="paper-pill">
+      <span class="dot" style="background:var(--green)"></span>
+      Hansen et al. 2022 — Nature Neuroscience
+    </a>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════════════════════════════════════════════════════ PAPER 1 -->
+<section class="section" id="paper1">
+  <div class="section-num">01 — The Engine</div>
+  <div class="section-title">The Wong-Wang model:<br>simulating a brain from wiring diagrams</div>
+  <div class="section-meta">Deco, Ponce-Alvarez, Mantini, Romani, Hagmann & Corbetta · J. Neuroscience, 2013</div>
+
+  <div class="paper-layout fade-in">
+    <div class="paper-content">
+      <p>
+        The central question this paper tackles is deceptively simple: <strong style="color:var(--text-bright)">if you know how brain regions are physically connected, can you predict how they'll talk to each other at rest?</strong>
+        The answer, they show, is yes — but only when the model operates at a very specific dynamical "sweet spot".
+      </p>
+
+      <div class="callout">
+        <strong>The core idea in one sentence:</strong> Each brain region is a tiny noisy oscillator; regions connected by white-matter fibres push and pull on each other; when you tune the global coupling just right, the pattern of correlated activity that emerges matches what fMRI sees in resting humans.
+      </div>
+
+      <p>
+        The model borrows from earlier work by
+        <span class="jargon">Wong &amp; Wang (2006)<span class="jargon-tip">A mathematical reduction that describes a population of NMDA-coupled neurons as a single equation. Instead of tracking millions of spikes, you track one number per region: the average amount of NMDA channels open (called S, the "synaptic gating variable").</span></span>.
+        Each brain region is reduced to one number — <em>S<sub>i</sub></em>, how open its NMDA-receptor channels are — and all 66 regions are coupled together through the real
+        <span class="jargon">structural connectome<span class="jargon-tip">A matrix where each entry tells you how many white-matter fibres run between two brain regions. Measured in living humans using diffusion MRI (tractography). Think of it as the brain's postal road network.</span></span>.
+      </p>
+
+      <h3 style="font-family:var(--serif); font-weight:400; font-size:1.15rem; color:var(--text-bright); margin: 1.5rem 0 0.75rem;">The key equation</h3>
+
+      <div class="formula">
+        <div class="formula-label">CORE MODEL</div>
+        dS<sub>i</sub>/dt = −S<sub>i</sub>/τ + γ·(1−S<sub>i</sub>)·H(x<sub>i</sub>) + σ·noise
+        <br><br>
+        <span class="comment">// H(x) = transfer function: input current → firing rate</span><br>
+        <span class="comment">// x_i depends on: own recurrent activity + G × (SC × S)</span><br>
+        <span class="comment">// G = global coupling — the one parameter you fit</span>
+      </div>
+
+      <p>
+        The magic is in <strong style="color:var(--amber)">G</strong> — a single number that scales how strongly regions influence each other.
+        Too low: every region does its own thing, no structure. Too high: everything synchronises into one giant blob.
+        The sweet spot — usually G ≈ 2 — is where the model's resting-state correlations best match real fMRI data. This is called the <em>working point</em>.
+      </p>
+
+      <div class="callout">
+        <strong>Why this matters for your project:</strong> Your code does exactly this G-sweep. The <code style="font-family:var(--mono); font-size:0.85rem; color:var(--amber)">fit_G()</code> function in <code style="font-family:var(--mono); font-size:0.85rem; color:var(--amber)">g_fitting.py</code> sweeps G from 0.5 to 4.0, runs simulations at each value, and picks the G that maximises how well simulated FC matches empirical HC FC. That's the entire Deco 2013 contribution in one function.
+      </div>
+    </div>
+
+    <div>
+      <!-- G Sweep Interactive -->
+      <div class="diagram-box fade-in">
+        <div class="diagram-title">Interactive: the G-sweep inverted-U curve</div>
+        <p style="font-size:0.82rem; color:var(--text-dim); margin-bottom:1rem;">
+          Drag the slider. Watch how FC quality changes as you tune global coupling G.
+          The peak is your "working point".
+        </p>
+
+        <div class="g-sweep-container">
+          <div class="g-slider-wrap">
+            <div class="g-slider-label">
+              <span>G (global coupling)</span>
+              <span id="g-val">G = 2.0</span>
+            </div>
+            <input type="range" id="g-slider" min="0.5" max="4.0" step="0.1" value="2.0">
+          </div>
+
+          <div class="g-curve">
+            <svg class="g-curve-svg" id="g-svg" viewBox="0 0 300 100" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="curveGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#f5a623" stop-opacity="0.3"/>
+                  <stop offset="100%" stop-color="#f5a623" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <!-- Axes -->
+              <line x1="20" y1="85" x2="290" y2="85" stroke="#252a3a" stroke-width="1"/>
+              <line x1="20" y1="5" x2="20" y2="85" stroke="#252a3a" stroke-width="1"/>
+              <!-- Curve fill -->
+              <path id="curve-fill" d="" fill="url(#curveGrad)"/>
+              <!-- Curve line -->
+              <path id="curve-path" d="" fill="none" stroke="#f5a623" stroke-width="2"/>
+              <!-- Current G indicator -->
+              <line id="g-line" x1="150" y1="5" x2="150" y2="85" stroke="rgba(245,166,35,0.4)" stroke-width="1" stroke-dasharray="3,3"/>
+              <circle id="g-dot" cx="150" cy="50" r="5" fill="#f5a623"/>
+              <!-- Labels -->
+              <text x="20" y="96" fill="#7a8099" font-size="8" font-family="monospace">0.5</text>
+              <text x="280" y="96" fill="#7a8099" font-size="8" font-family="monospace">4.0</text>
+              <text x="5" y="10" fill="#7a8099" font-size="7" font-family="monospace" writing-mode="vertical-rl">r</text>
+            </svg>
+          </div>
+
+          <div class="g-region-label" id="g-region-label"
+               style="background:rgba(245,166,35,0.1); color:var(--amber); border: 1px solid var(--amber-dim);">
+            Working point — SC structure shaping FC
+          </div>
+        </div>
+      </div>
+
+      <!-- E/I balance demo -->
+      <div class="diagram-box fade-in" style="margin-top:1.5rem;">
+        <div class="diagram-title">The excitatory / inhibitory balance</div>
+        <p style="font-size:0.82rem; color:var(--text-dim); margin-bottom:1rem;">
+          Each brain region has excitatory neurons (amplify signal) and inhibitory neurons (dampen it). The balance between them determines how a region responds to input.
+        </p>
+
+        <div class="ei-demo">
+          <div class="ei-box exc">
+            <div class="ei-box-label">EXCITATORY (NMDA)</div>
+            <div class="ei-box-val" id="exc-val">1.4</div>
+            <div style="font-size:0.7rem; color:var(--text-dim); margin-top:0.3rem;">w+ recurrent</div>
+          </div>
+          <div class="ei-box inh">
+            <div class="ei-box-label">INHIBITORY (GABA)</div>
+            <div class="ei-box-val" id="inh-val">1.0</div>
+            <div style="font-size:0.7rem; color:var(--text-dim); margin-top:0.3rem;">J_I weight</div>
+          </div>
+        </div>
+
+        <input type="range" id="ei-slider" min="0" max="100" value="58"
+               style="margin-top:0.5rem;">
+        <div class="balance-bar" id="balance-bar" style="--inh-pct: 42%;"></div>
+        <div class="ei-result" id="ei-result">Healthy balance — structured resting-state FC emerges</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════════════════════════════════════════════════════ PAPER 2 -->
+<section class="section" id="paper2">
+  <div class="section-num">02 — The Heterogeneity Upgrade</div>
+  <div class="section-title">Not all brain regions are equal:<br>
+  <em>heterogeneous</em> local circuits matter</div>
+  <div class="section-meta">Demirtaş, Burt, Helmer et al. · Neuron, 2019</div>
+
+  <div class="paper-layout fade-in">
+    <div class="paper-content">
+      <p>
+        Deco 2013's model treated every brain region as identical — same local parameters everywhere, only the wiring differed.
+        Demirtaş et al. showed this is wrong in an important way: <strong style="color:var(--text-bright)">the cortex is not uniform</strong>.
+        Primary visual cortex and the prefrontal cortex aren't just differently connected — they're <em>intrinsically</em> different in how strongly their local circuits recur on themselves.
+      </p>
+
+      <p>
+        The key measurement they used is the <span class="jargon">T1w/T2w ratio<span class="jargon-tip">An MRI contrast ratio that reflects how much myelin (the fatty sheath around axons) is present in cortical grey matter. High T1w/T2w = heavily myelinated = lower sensory areas (visual, motor). Low T1w/T2w = lightly myelinated = higher association areas (prefrontal, default mode). It turns out this gradient perfectly predicts local circuit excitability.</span></span> — a proxy for myelin content — which traces a gradient from early sensory areas (high myelination, strong local recurrence) to association areas like the prefrontal cortex (low myelination, weaker local recurrence).
+      </p>
+
+      <div class="callout">
+        <strong>The key finding:</strong> When they let each region's excitatory parameters (w<sub>EE</sub>, w<sub>EI</sub>) vary along this cortical hierarchy, the model's simulated FC matched real FC <em>dramatically</em> better than the homogeneous version. The sensory-association gradient in resting-state activity only emerges when local heterogeneity is included.
+      </div>
+
+      <p>
+        This paper also makes a crucial forward-looking point that is <em>exactly</em> what your project does:
+      </p>
+
+      <div class="callout" style="border-color:var(--blue); background:rgba(74,158,255,0.08);">
+        <strong style="color:var(--blue)">Direct quote (paraphrased):</strong> "Heterogeneity maps could reflect varying distributions of receptor subtypes, neuronal cell types, and neuromodulators. These maps could be derived from gene expression, positron emission tomography, or autoradiography. Large-scale models can be fit to pharmacological neuroimaging, through simulation of hypothesised parameter perturbations that <em>follow the expression topography of affected receptors</em>."
+        <br><br>
+        That's Hansen 2022 + your PET maps + your perturbations. They literally described your project in their discussion section.
+      </div>
+
+      <h3 style="font-family:var(--serif); font-weight:400; font-size:1.15rem; color:var(--text-bright); margin: 1.5rem 0 0.75rem;">How heterogeneity is parameterised</h3>
+
+      <p>
+        For each region <em>i</em>, the local parameters are set by a simple linear function of the heterogeneity map value <em>h<sub>i</sub></em>:
+      </p>
+
+      <div class="formula">
+        <div class="formula-label">HETEROGENEOUS PARAMETERS</div>
+        w<sub>i</sub> = w<sub>min</sub> + w<sub>scale</sub> × h<sub>i</sub>
+        <br><br>
+        <span class="comment">// h_i ∈ [0, 1] — normalised T1w/T2w or receptor density</span><br>
+        <span class="comment">// Your project: h_i comes from PET receptor density maps</span><br>
+        <span class="comment">// NMDA: modulates w+  |  GABA: modulates J_I  |  D1: modulates a,b</span>
+      </div>
+    </div>
+
+    <div>
+      <!-- Hierarchy map visual -->
+      <div class="diagram-box fade-in">
+        <div class="diagram-title">Cortical hierarchy: sensory → association</div>
+        <p style="font-size:0.82rem; color:var(--text-dim); margin-bottom:1.25rem;">
+          Brain regions from primary sensory (left) to prefrontal association (right). Colour = local excitability parameter w. Hover over a region to see its properties.
+        </p>
+
+        <div id="hierarchy-vis" style="display:flex; gap:3px; height:80px; align-items:flex-end; margin-bottom:0.75rem;"></div>
+
+        <div style="display:flex; justify-content:space-between; font-family:var(--mono); font-size:0.65rem; color:var(--text-dim);">
+          <span>Visual / Motor cortex</span>
+          <span>Prefrontal / DMN</span>
+        </div>
+
+        <div id="hier-tooltip" style="margin-top:1rem; padding:0.75rem; background:var(--bg); border:1px solid var(--border); border-radius:3px; font-family:var(--mono); font-size:0.72rem; color:var(--text-dim); min-height:50px;">
+          Hover over a bar to see region properties
+        </div>
+      </div>
+
+      <!-- Homogeneous vs Heterogeneous comparison -->
+      <div class="diagram-box fade-in" style="margin-top:1.5rem;">
+        <div class="diagram-title">Homogeneous vs Heterogeneous model FC</div>
+        <div style="display:flex; gap:0.5rem; margin-bottom:0.75rem;">
+          <button class="rtab active" id="tab-homo" onclick="showFCMode('homo')">Homogeneous</button>
+          <button class="rtab" id="tab-hetero" onclick="showFCMode('hetero')">Heterogeneous</button>
+          <button class="rtab" id="tab-empirical" onclick="showFCMode('empirical')">Empirical</button>
+        </div>
+        <div id="fc-matrix-container" style="display:flex; justify-content:center;"></div>
+        <div id="fc-caption" style="text-align:center; font-family:var(--mono); font-size:0.68rem; color:var(--text-dim); margin-top:0.75rem;">
+          Homogeneous model — misses the sensory/association structure
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════════════════════════════════════════════════════ PAPER 3 -->
+<section class="section" id="paper3">
+  <div class="section-num">03 — The Atlas</div>
+  <div class="section-title">A map of the brain's chemical landscape:<br>19 receptors, 1,200 people</div>
+  <div class="section-meta">Hansen, Shafiei, Markello et al. · Nature Neuroscience, 2022</div>
+
+  <div class="paper-layout fade-in">
+    <div class="paper-content">
+      <p>
+        If Demirtaş 2019 said "use receptor density maps to parameterise your model", Hansen 2022 is the paper that <em>built those maps</em>. It's a resource paper — its primary contribution is compiling and validating a comprehensive PET-derived atlas of receptor densities across the entire human cortex.
+      </p>
+
+      <p>
+        They collected <span class="jargon">PET scans<span class="jargon-tip">Positron Emission Tomography. You inject a radioactive molecule that binds specifically to one type of receptor (e.g. NMDA receptors). Where the molecule accumulates tells you where those receptors are dense. Each scan costs around £3,000 and requires a cyclotron nearby. Hansen et al. pooled data from labs worldwide to avoid having to do all 19 scans themselves.</span></span> from over 1,200 healthy individuals across multiple labs worldwide, covering 19 different receptors and transporters across 9 neurotransmitter systems. For each receptor, you get a map of the human cortex showing where that receptor is densest.
+      </p>
+
+      <div class="callout">
+        <strong>Key finding 1:</strong> Receptor density profiles are correlated with structural connectivity — regions that are anatomically connected tend to have similar receptor fingerprints. Chemistry and wiring co-evolve.
+      </div>
+
+      <div class="callout">
+        <strong>Key finding 2:</strong> Receptor distributions predict which disorders affect which brain regions. NMDA receptor density maps correlate with where schizophrenia causes the most grey matter loss.
+      </div>
+
+      <p>
+        The three receptors you use come directly from this atlas:
+      </p>
+
+      <div class="mechanism-cards" style="margin-top:1.5rem; margin-bottom:0;">
+        <div class="mcard" style="--card-accent: var(--amber)">
+          <div class="mcard-icon">⚡</div>
+          <h3>NMDA</h3>
+          <p>Excitatory glutamate receptor. Main driver of long-range cortical communication. The leading target in schizophrenia pharmacology.</p>
+          <span class="mcard-tag">galovic2021 tracer: GE179</span>
+        </div>
+        <div class="mcard" style="--card-accent: var(--red)">
+          <div class="mcard-icon">🔴</div>
+          <h3>Dopamine D1</h3>
+          <p>Modulates excitability in prefrontal cortex. Classic target of antipsychotics. Dysregulation linked to working memory and positive symptoms.</p>
+          <span class="mcard-tag">kaller2017 tracer: SCH23390</span>
+        </div>
+        <div class="mcard" style="--card-accent: var(--blue)">
+          <div class="mcard-icon">🔵</div>
+          <h3>GABA-A</h3>
+          <p>Main inhibitory receptor. Interneuron deficit hypothesis: loss of fast inhibition → runaway excitation → disorganised FC.</p>
+          <span class="mcard-tag">norgaard2021 tracer: Ro154513</span>
+        </div>
+      </div>
+
+      <h3 style="font-family:var(--serif); font-weight:400; font-size:1.15rem; color:var(--text-bright); margin: 2rem 0 0.75rem;">From PET scan to model parameter</h3>
+      <p>The pipeline from raw PET image to the perturbation vectors in your code:</p>
+
+      <div class="pipeline" style="overflow-x:auto;">
+        <div class="pipe-step">
+          <div class="pipe-step-num">STEP 1</div>
+          <div class="pipe-step-label">PET image</div>
+          <div class="pipe-step-sub">256³ voxel volume</div>
+        </div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-step">
+          <div class="pipe-step-num">STEP 2</div>
+          <div class="pipe-step-label">Parcellate</div>
+          <div class="pipe-step-sub">ROI atlas → 83 values</div>
+        </div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-step">
+          <div class="pipe-step-num">STEP 3</div>
+          <div class="pipe-step-label">Min-max scale</div>
+          <div class="pipe-step-sub">→ [0, 1] per region</div>
+        </div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-step">
+          <div class="pipe-step-num">STEP 4</div>
+          <div class="pipe-step-label">Perturb param</div>
+          <div class="pipe-step-sub">w+ / J_I / a,b per node</div>
+        </div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-step">
+          <div class="pipe-step-num">STEP 5</div>
+          <div class="pipe-step-label">Simulate FC</div>
+          <div class="pipe-step-sub">Wong-Wang model</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <!-- PET receptor map interactive -->
+      <div class="diagram-box fade-in">
+        <div class="diagram-title">Receptor density across 83 regions</div>
+        <p style="font-size:0.82rem; color:var(--text-dim); margin-bottom:1rem;">
+          Each cell = one brain region. Colour = receptor density (darker = higher). Select a receptor system.
+        </p>
+
+        <div class="receptor-tabs">
+          <button class="rtab active" onclick="showReceptor('NMDA', this)">NMDA</button>
+          <button class="rtab" onclick="showReceptor('D1', this)">D1</button>
+          <button class="rtab" onclick="showReceptor('GABA', this)">GABA-A</button>
+        </div>
+
+        <div class="pet-map" id="pet-map" style="grid-template-columns: repeat(9, 1fr);"></div>
+
+        <div style="display:flex; justify-content:space-between; font-family:var(--mono); font-size:0.65rem; color:var(--text-dim); margin-top:0.5rem;">
+          <span>Low density</span>
+          <span>High density</span>
+        </div>
+        <div style="height:4px; border-radius:2px; background:linear-gradient(90deg, var(--bg3), var(--amber)); margin-top:0.25rem;"></div>
+
+        <div id="pet-info" style="margin-top:0.75rem; padding:0.6rem 0.75rem; background:var(--bg); border:1px solid var(--border); border-radius:3px; font-family:var(--mono); font-size:0.7rem; color:var(--text-dim); min-height:40px;">
+          Hover over a region cell to see its density value
+        </div>
+      </div>
+
+      <!-- Orthogonality note -->
+      <div class="diagram-box fade-in" style="margin-top:1.5rem;">
+        <div class="diagram-title">Why three separate hypotheses?</div>
+        <p style="font-size:0.85rem; color:var(--text); line-height:1.6; margin-bottom:1rem;">
+          The NMDA, D1, and GABA-A maps are <em>correlated</em> across the cortex (r ≈ 0.5–0.75) — regions rich in one receptor tend to be rich in others. This is important to know because it means the three conditions aren't perfectly independent tests.
+        </p>
+        <p style="font-size:0.85rem; color:var(--text); line-height:1.6; margin-bottom:1rem;">
+          But despite this overlap, <strong style="color:var(--text-bright)">the spatial patterns differ enough to produce distinct simulated FC fingerprints</strong> — which is why you can still compare conditions and ask which best explains SCZ.
+        </p>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.5rem; margin-top:1rem;">
+          <div style="text-align:center; padding:0.75rem; background:var(--bg); border:1px solid var(--border); border-radius:3px;">
+            <div style="font-family:var(--mono); font-size:0.65rem; color:var(--text-dim)">NMDA vs D1</div>
+            <div style="font-family:var(--mono); font-size:1.2rem; color:var(--amber)">r=0.75</div>
+          </div>
+          <div style="text-align:center; padding:0.75rem; background:var(--bg); border:1px solid var(--border); border-radius:3px;">
+            <div style="font-family:var(--mono); font-size:0.65rem; color:var(--text-dim)">NMDA vs GABA</div>
+            <div style="font-family:var(--mono); font-size:1.2rem; color:var(--amber)">r=0.75</div>
+          </div>
+          <div style="text-align:center; padding:0.75rem; background:var(--bg); border:1px solid var(--border); border-radius:3px;">
+            <div style="font-family:var(--mono); font-size:0.65rem; color:var(--text-dim)">D1 vs GABA</div>
+            <div style="font-family:var(--mono); font-size:1.2rem; color:var(--amber)">r=0.53</div>
+          </div>
+        </div>
+        <div style="font-family:var(--mono); font-size:0.68rem; color:var(--text-dim); margin-top:0.5rem;">
+          From your orthogonality check — real values from your dataset.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════════════════════════════════════════════════════ YOUR MODEL -->
+<section class="section" id="your-model">
+  <div class="section-num">04 — Your Project</div>
+  <div class="section-title">Putting it all together:<br>the schizophrenia question</div>
+
+  <div class="fade-in" style="max-width:700px; margin-bottom:3rem;">
+    <p style="margin-bottom:1.2rem;">
+      Your model combines all three papers into a single pipeline. The research question is:
+      <strong style="color:var(--text-bright)"> which receptor system — NMDA, D1, or GABA-A — when perturbed according to its real spatial density map, produces simulated functional connectivity most similar to empirical schizophrenia FC?</strong>
+    </p>
+    <p style="color:var(--text-dim);">
+      This is a mechanistic test of three competing theories of schizophrenia, grounded in real neuroimaging data and real biophysics.
+    </p>
+  </div>
+
+  <div class="mechanism-cards fade-in">
+    <div class="mcard" style="--card-accent: var(--amber)">
+      <div class="mcard-icon">⚡</div>
+      <h3>NMDA Hypofunction</h3>
+      <p>Reduce recurrent excitation (w+) in proportion to NMDA density. Mimics ketamine-like glutamate blockade. Predicts: reduced long-range FC, especially in prefrontal regions.</p>
+      <span class="mcard-tag">w+ ↓ by 10% weighted by NMDA map</span>
+    </div>
+    <div class="mcard" style="--card-accent: var(--red)">
+      <div class="mcard-icon">🔴</div>
+      <h3>D1 Dysregulation</h3>
+      <p>Reduce transfer function gain (a, b) in proportion to D1 density. Mimics reduced dopaminergic modulation of prefrontal excitability. Predicts: blunted prefrontal responses.</p>
+      <span class="mcard-tag">a, b ↓ by 10% weighted by D1 map</span>
+    </div>
+    <div class="mcard" style="--card-accent: var(--blue)">
+      <div class="mcard-icon">🔵</div>
+      <h3>GABA-A Deficit</h3>
+      <p>Reduce inhibitory strength (J_I) in proportion to GABA-A density. Mimics parvalbumin interneuron loss. Predicts: runaway local excitation, disrupted inhibitory control.</p>
+      <span class="mcard-tag">J_I ↓ by 10% weighted by GABA map</span>
+    </div>
+    <div class="mcard" style="--card-accent: var(--text-dim)">
+      <div class="mcard-icon">🎲</div>
+      <h3>Null Model</h3>
+      <p>Same perturbation magnitude as NMDA, but spatially scrambled — applied to random regions. Tests whether the <em>spatial pattern</em> matters, not just the perturbation size.</p>
+      <span class="mcard-tag">w+ ↓ by 10% at random nodes</span>
+    </div>
+  </div>
+
+  <div class="fade-in" style="margin-top:3rem;">
+    <div class="diagram-box">
+      <div class="diagram-title">What a result looks like</div>
+      <p style="font-size:0.85rem; color:var(--text-dim); margin-bottom:1.5rem;">
+        After simulating, you compare each condition's FC against empirical SCZ FC using Spearman r. The winner (highest delta_r = r(sim,SCZ) − r(sim,HC)) is the most likely mechanism.
+      </p>
+
+      <div id="result-bars" style="display:flex; flex-direction:column; gap:0.75rem; max-width:500px;">
+      </div>
+
+      <p style="font-family:var(--mono); font-size:0.68rem; color:var(--text-dim); margin-top:1.25rem;">
+        Example result (illustrative — your actual values depend on the model fit). A positive delta_r means the condition's FC fingerprint is more SCZ-like than HC-like.
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════════════════════════════════════════════════════ GLOSSARY -->
+<section class="section" id="glossary">
+  <div class="section-num">05 — Reference</div>
+  <div class="section-title">Glossary of key terms</div>
+
+  <div class="glossary-grid fade-in">
+    <div class="gterm">
+      <div class="gterm-word">Structural Connectivity (SC)</div>
+      <div class="gterm-def">A matrix showing white-matter fibre connections between brain regions. Measured with diffusion MRI. It's the brain's physical wiring — like a road map between cities.</div>
+    </div>
+    <div class="gterm">
+      <div class="gterm-word">Functional Connectivity (FC)</div>
+      <div class="gterm-def">How correlated the activity is between brain regions during rest. Measured with fMRI BOLD signal. Two regions with high FC are "talking" a lot — even without a direct physical connection.</div>
+    </div>
+    <div class="gterm">
+      <div class="gterm-word">Synaptic gating variable S</div>
+      <div class="gterm-def">In the Wong-Wang model, S_i represents the fraction of NMDA channels open in region i. It's the single number that tracks each region's "excitation level". Ranges from 0 (silent) to 1 (fully saturated).</div>
+    </div>
+    <div class="gterm">
+      <div class="gterm-word">Transfer function H(x)</div>
+      <div class="gterm-def">Converts total input current x into a firing rate. Shaped like an S-curve (sigmoid). Parameters a and b set the gain and threshold. D1 dopamine receptors modulate a and b in your model.</div>
+    </div>
+    <div class="gterm">
+      <div class="gterm-word">Global coupling G</div>
+      <div class="gterm-def">A single multiplier that scales how strongly all SC connections drive the network. G=0: regions are isolated. G too large: entire brain synchronises. The "working point" is the G where simulated FC best matches real FC.</div>
+    </div>
+    <div class="gterm">
+      <div class="gterm-word">Working point</div>
+      <div class="gterm-def">The critical dynamical regime — near the edge of a bifurcation — where noise-driven fluctuations are just large enough to explore the SC-defined landscape. This is where models best reproduce empirical FC.</div>
+    </div>
+    <div class="gterm">
+      <div class="gterm-word">PET (Positron Emission Tomography)</div>
+      <div class="gterm-def">An imaging technique that uses radioactive tracers to measure receptor density in vivo. Each tracer binds to a specific receptor type. The resulting brain map shows where that receptor is most concentrated.</div>
+    </div>
+    <div class="gterm">
+      <div class="gterm-word">NMDA receptor</div>
+      <div class="gterm-def">N-Methyl-D-Aspartate receptor. A glutamate-gated ion channel critical for synaptic plasticity and long-range cortical communication. Ketamine and PCP block NMDA receptors, producing psychosis-like states — hence the NMDA hypofunction hypothesis of schizophrenia.</div>
+    </div>
+    <div class="gterm">
+      <div class="gterm-word">FIC (Feedback Inhibitory Control)</div>
+      <div class="gterm-def">A mathematical trick where each region's inhibitory strength J_I is adjusted to keep baseline firing at a fixed target. It makes the model easier to tune but requires iterative fitting. Your project disables FIC (J_I = 1.0 fixed) for simplicity.</div>
+    </div>
+    <div class="gterm">
+      <div class="gterm-word">Euler-Maruyama</div>
+      <div class="gterm-def">The numerical integration method your code uses to simulate the stochastic differential equations. It's the simplest method for systems with noise — update state by a small step dt, add a noise term proportional to √dt. Fast but requires small dt (0.1ms in your code).</div>
+    </div>
+    <div class="gterm">
+      <div class="gterm-word">Consensus SC</div>
+      <div class="gterm-def">A group-level structural connectivity matrix that only keeps edges present in ≥50% of subjects. Necessary because averaging 27 individual SC matrices fills in "ghost" connections — edges not present in any single subject but appearing due to inter-subject variation.</div>
+    </div>
+    <div class="gterm">
+      <div class="gterm-word">Spearman r</div>
+      <div class="gterm-def">A correlation measure that compares two sets of numbers by their rank order rather than raw values. Used to compare simulated FC to empirical FC because it's robust to outliers and doesn't assume linearity. Ranges −1 to +1.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════ FOOTER -->
+<footer>
+  <div class="footer-note">
+    Built for a 2nd-year neuroscience student.<br>
+    Based on three primary papers in computational neuroscience.
+  </div>
+  <div class="footer-refs">
+    <a href="https://doi.org/10.1523/JNEUROSCI.1091-13.2013" target="_blank">↗ Deco et al. 2013 — J. Neuroscience</a>
+    <a href="https://doi.org/10.1016/j.neuron.2019.01.017" target="_blank">↗ Demirtaş et al. 2019 — Neuron</a>
+    <a href="https://doi.org/10.1038/s41593-022-01186-3" target="_blank">↗ Hansen et al. 2022 — Nat. Neuroscience</a>
+  </div>
+</footer>
+
+<script>
+// ── G SWEEP CURVE ──────────────────────────────────────────────────────────
+const gSlider = document.getElementById('g-slider');
+const gValLabel = document.getElementById('g-val');
+const gRegionLabel = document.getElementById('g-region-label');
+const gLine = document.getElementById('g-line');
+const gDot = document.getElementById('g-dot');
+const curvePath = document.getElementById('curve-path');
+const curveFill = document.getElementById('curve-fill');
+
+// Realistic inverted-U curve: r peaks around G=2.0
+function rFromG(g) {
+  const peak = 2.0, sigma = 0.9;
+  return 0.45 * Math.exp(-0.5 * Math.pow((g - peak) / sigma, 2))
+         + 0.02 * Math.sin(g * 2.1) - 0.01 * g * 0.1;
+}
+
+function buildCurve() {
+  const W = 300, H = 100, pad = 20;
+  const gMin = 0.5, gMax = 4.0;
+  const points = [];
+  for (let g = gMin; g <= gMax + 0.01; g += 0.05) {
+    const x = pad + (g - gMin) / (gMax - gMin) * (W - 2 * pad);
+    const r = Math.max(0, rFromG(g));
+    const y = (H - pad) - r / 0.5 * (H - 2 * pad);
+    points.push([x, y]);
+  }
+  const d = points.map((p, i) => (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+  const dFill = d + ` L${points[points.length-1][0]},${H - pad} L${points[0][0]},${H - pad} Z`;
+  curvePath.setAttribute('d', d);
+  curveFill.setAttribute('d', dFill);
+  return { points, W, H, pad, gMin, gMax };
+}
+
+const curveInfo = buildCurve();
+
+function updateG(g) {
+  const { W, H, pad, gMin, gMax } = curveInfo;
+  const x = pad + (g - gMin) / (gMax - gMin) * (W - 2 * pad);
+  const r = Math.max(0, rFromG(g));
+  const y = (H - pad) - r / 0.5 * (H - 2 * pad);
+
+  gLine.setAttribute('x1', x); gLine.setAttribute('x2', x);
+  gDot.setAttribute('cx', x); gDot.setAttribute('cy', y);
+  gValLabel.textContent = `G = ${parseFloat(g).toFixed(1)}  |  r = ${r.toFixed(3)}`;
+
+  if (g < 1.0) {
+    gRegionLabel.textContent = '⬇ Subcritical — regions too isolated, no SC structure in FC';
+    gRegionLabel.style.background = 'rgba(122,128,153,0.1)';
+    gRegionLabel.style.color = 'var(--text-dim)';
+    gRegionLabel.style.borderColor = 'var(--border)';
+  } else if (g >= 1.0 && g <= 2.8) {
+    gRegionLabel.textContent = '✓ Working point — SC shapes FC, inverted-U peak';
+    gRegionLabel.style.background = 'rgba(245,166,35,0.1)';
+    gRegionLabel.style.color = 'var(--amber)';
+    gRegionLabel.style.borderColor = 'var(--amber-dim)';
+  } else {
+    gRegionLabel.textContent = '⬆ Supercritical — network oversynchronised, FC too homogeneous';
+    gRegionLabel.style.background = 'rgba(224,92,92,0.1)';
+    gRegionLabel.style.color = 'var(--red)';
+    gRegionLabel.style.borderColor = 'var(--red)';
+  }
+}
+
+gSlider.addEventListener('input', e => updateG(parseFloat(e.target.value)));
+updateG(2.0);
+
+// ── E/I BALANCE ────────────────────────────────────────────────────────────
+const eiSlider = document.getElementById('ei-slider');
+const excVal = document.getElementById('exc-val');
+const inhVal = document.getElementById('inh-val');
+const balanceBar = document.getElementById('balance-bar');
+const eiResult = document.getElementById('ei-result');
+
+eiSlider.addEventListener('input', e => {
+  const v = parseInt(e.target.value);  // 0=all inh, 100=all exc
+  const exc = (0.8 + v / 100 * 1.2).toFixed(2);
+  const inh = (1.8 - v / 100 * 1.2).toFixed(2);
+  excVal.textContent = exc;
+  inhVal.textContent = inh;
+  const inhPct = Math.round((1 - v / 100) * 60 + 20);
+  balanceBar.style.setProperty('--inh-pct', inhPct + '%');
+
+  if (v < 30) {
+    eiResult.textContent = 'GABA dominance → over-inhibited, suppressed activity, flat FC';
+    eiResult.style.color = 'var(--blue)';
+  } else if (v > 75) {
+    eiResult.textContent = 'Excitatory dominance → runaway excitation, seizure-like, no structure';
+    eiResult.style.color = 'var(--red)';
+  } else if (v >= 40 && v <= 65) {
+    eiResult.textContent = 'Healthy E/I balance → structured resting-state FC emerges ✓';
+    eiResult.style.color = 'var(--green)';
+  } else {
+    eiResult.textContent = 'Mild imbalance → slight degradation in FC structure';
+    eiResult.style.color = 'var(--amber)';
+  }
+});
+
+// ── HIERARCHY VISUALISATION ────────────────────────────────────────────────
+const hierVis = document.getElementById('hierarchy-vis');
+const hierTooltip = document.getElementById('hier-tooltip');
+
+const regionNames = [
+  'V1','V2','V3','V4','MT','A1','S1','M1','SMA','PMC','IPC','SPC',
+  'TPJ','STG','IFG','DLPFC','VLPFC','OFC','ACC','PCC','mPFC','PPC',
+  'Insula','amygdala','hippocampus','thalamus'
+];
+
+for (let i = 0; i < 26; i++) {
+  const t = i / 25;  // 0 = sensory, 1 = association
+  const h = 30 + t * 65;
+  const r = 180 - t * 100;
+  const g = 80 + t * 50;
+  const b = 20 + t * 30;
+
+  const bar = document.createElement('div');
+  bar.style.cssText = `
+    flex:1; height:${h}px; border-radius:2px 2px 0 0;
+    background: rgb(${r},${g},${b});
+    cursor:pointer; transition: height 0.2s, filter 0.2s;
+    min-width:8px;
+  `;
+  bar.addEventListener('mouseenter', () => {
+    bar.style.filter = 'brightness(1.5)';
+    const wEE = (1.2 + t * 0.4).toFixed(2);
+    hierTooltip.innerHTML = `
+      <span style="color:var(--amber)">${regionNames[i] || 'Region ' + i}</span><br>
+      Hierarchy level: ${(t * 100).toFixed(0)}% (${t < 0.3 ? 'sensory' : t > 0.7 ? 'association' : 'intermediate'})<br>
+      w_EE = ${wEE} | T1w/T2w proxy: ${(1 - t * 0.6).toFixed(2)}
+    `;
+  });
+  bar.addEventListener('mouseleave', () => { bar.style.filter = ''; });
+  hierVis.appendChild(bar);
+}
+
+// ── FC MATRIX ─────────────────────────────────────────────────────────────
+const fcContainer = document.getElementById('fc-matrix-container');
+const fcCaption = document.getElementById('fc-caption');
+const N = 14;
+
+function generateFC(type) {
+  const fc = [];
+  for (let i = 0; i < N; i++) {
+    fc.push([]);
+    for (let j = 0; j < N; j++) {
+      let v;
+      if (i === j) { v = 1.0; }
+      else if (type === 'homo') {
+        // Homogeneous: weakly structured, mostly random
+        v = (Math.random() - 0.3) * 0.5 + 0.05 * Math.cos((i - j) * 0.8);
+      } else if (type === 'hetero') {
+        // Heterogeneous: clear block structure (sensory / association)
+        const si = i < 7, sj = j < 7;
+        if (si && sj) v = 0.3 + Math.random() * 0.4;
+        else if (!si && !sj) v = 0.25 + Math.random() * 0.35;
+        else v = -0.05 + Math.random() * 0.15;
+      } else {
+        // Empirical: realistic with anti-correlations
+        const si = i < 7, sj = j < 7;
+        if (si && sj) v = 0.35 + Math.random() * 0.45;
+        else if (!si && !sj) v = 0.3 + Math.random() * 0.4;
+        else v = -0.1 + Math.random() * 0.2;
+      }
+      fc[i].push(Math.min(1, Math.max(-0.5, v)));
+    }
+  }
+  return fc;
+}
+
+const fcData = { homo: generateFC('homo'), hetero: generateFC('hetero'), empirical: generateFC('empirical') };
+const fcCaptions = {
+  homo: 'Homogeneous model — misses the sensory/association block structure',
+  hetero: 'Heterogeneous model — recovers sensory/association organisation ✓',
+  empirical: 'Empirical FC — the target we compare against'
+};
+
+function renderFC(type) {
+  fcContainer.innerHTML = '';
+  const grid = document.createElement('div');
+  grid.className = 'fc-matrix';
+  grid.style.gridTemplateColumns = `repeat(${N}, 1fr)`;
+
+  const fc = fcData[type];
+  for (let i = 0; i < N; i++) {
+    for (let j = 0; j < N; j++) {
+      const v = fc[i][j];
+      const cell = document.createElement('div');
+      cell.className = 'fc-cell';
+      // RdBu: negative = blue, positive = red/amber
+      if (v > 0) {
+        const a = Math.min(1, v);
+        cell.style.background = `rgba(245,166,35,${a})`;
+      } else {
+        const a = Math.min(1, -v * 2);
+        cell.style.background = `rgba(74,158,255,${a})`;
+      }
+      cell.title = `FC[${i},${j}] = ${v.toFixed(3)}`;
+      grid.appendChild(cell);
+    }
+  }
+  fcContainer.appendChild(grid);
+  fcCaption.textContent = fcCaptions[type];
+}
+
+window.showFCMode = function(type) {
+  document.getElementById('tab-homo').classList.toggle('active', type === 'homo');
+  document.getElementById('tab-hetero').classList.toggle('active', type === 'hetero');
+  document.getElementById('tab-empirical').classList.toggle('active', type === 'empirical');
+  renderFC(type);
+};
+renderFC('homo');
+
+// ── PET MAP ───────────────────────────────────────────────────────────────
+const petMap = document.getElementById('pet-map');
+const petInfo = document.getElementById('pet-info');
+
+// Simulated receptor density patterns (simplified anatomical gradients)
+const receptorProfiles = {
+  NMDA: () => Array.from({length: 83}, (_, i) => {
+    // NMDA: high in frontal and temporal, lower in primary sensory
+    const pos = i / 82;
+    return 0.3 + 0.5 * Math.sin(pos * Math.PI) + 0.2 * Math.random() - 0.1;
+  }),
+  D1: () => Array.from({length: 83}, (_, i) => {
+    // D1: high in frontal/striatum, drops in posterior
+    const pos = i / 82;
+    return 0.6 * Math.exp(-pos * 1.5) + 0.4 * Math.random();
+  }),
+  GABA: () => Array.from({length: 83}, (_, i) => {
+    // GABA: relatively uniform with cortical gradient
+    const pos = i / 82;
+    return 0.4 + 0.3 * pos + 0.3 * Math.random() - 0.15;
+  }),
+};
+
+const petDataCache = {};
+function getPetData(r) {
+  if (!petDataCache[r]) {
+    const vals = receptorProfiles[r]();
+    const min = Math.min(...vals), max = Math.max(...vals);
+    petDataCache[r] = vals.map(v => (v - min) / (max - min));
+  }
+  return petDataCache[r];
+}
+
+const regionLabels = ['PFC', 'DLPFC', 'VLPFC', 'OFC', 'ACC', 'PCC', 'mPFC', 'SFG', 'MFG', 'IFG',
+  'SPL', 'IPL', 'Angular', 'Supramarginal', 'STG', 'MTG', 'ITG', 'FuG', 'PHG',
+  'Insula', 'Amygdala', 'Hippocampus', 'Parahippocampal', 'Caudate', 'Putamen',
+  'Thalamus', 'Cerebellum', 'V1', 'V2', 'V3', 'V4', 'MT+', 'LOC', 'FFA',
+  'PPA', 'EBA', 'STS', 'TPJ', 'A1', 'A2', 'S1', 'S2', 'M1', 'SMA', 'PMd',
+  'PMv', 'pre-SMA', 'FEF', 'SEF', 'IPS', 'SPL2', 'Prec', 'RSC', 'PCC2',
+  'CG1', 'CG2', 'CG3', 'CG4', 'CG5', 'OFC2', 'FP', 'FI', 'AI', 'PI',
+  'DLPFC2', 'VLPFC2', 'lat-OFC', 'PFC2', 'AG', 'MFG2', 'IFG2', 'SFG2',
+  'TPJ2', 'STG2', 'MTG2', 'ITG2', 'FuG2', 'PHG2', 'AG2', 'Precuneus', 'PCC3'];
+
+window.showReceptor = function(r, btn) {
+  document.querySelectorAll('.receptor-tabs .rtab').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+
+  const vals = getPetData(r);
+  petMap.innerHTML = '';
+  vals.forEach((v, i) => {
+    const cell = document.createElement('div');
+    cell.className = 'pet-cell';
+    cell.style.background = `rgba(245,166,35,${0.1 + v * 0.9})`;
+    cell.title = `${regionLabels[i] || 'R' + i}: ${(v * 100).toFixed(0)}% max`;
+    cell.addEventListener('mouseenter', () => {
+      petInfo.innerHTML = `<span style="color:var(--amber)">${regionLabels[i] || 'Region ' + i}</span> · ${r} density = <span style="color:var(--text-bright)">${(v * 100).toFixed(0)}% of max</span> · Model perturbation: ${(v * 10).toFixed(1)}% parameter shift`;
+    });
+    petMap.appendChild(cell);
+  });
+};
+showReceptor('NMDA');
+
+// ── RESULT BARS ───────────────────────────────────────────────────────────
+const resultBars = document.getElementById('result-bars');
+const results = [
+  { cond: 'NMDA', r_hc: 0.38, r_scz: 0.51, color: 'var(--amber)' },
+  { cond: 'GABA', r_hc: 0.35, r_scz: 0.44, color: 'var(--blue)' },
+  { cond: 'D1',   r_hc: 0.36, r_scz: 0.40, color: 'var(--red)' },
+  { cond: 'NULL', r_hc: 0.37, r_scz: 0.37, color: 'var(--text-dim)' },
+];
+
+results.forEach(({ cond, r_hc, r_scz, color }) => {
+  const delta = r_scz - r_hc;
+  const pct = (delta / 0.15) * 100; // scale to bar width
+  const div = document.createElement('div');
+  div.style.cssText = 'display:flex; align-items:center; gap:1rem;';
+  div.innerHTML = `
+    <div style="font-family:var(--mono);font-size:0.72rem;color:${color};width:50px;flex-shrink:0;">${cond}</div>
+    <div style="flex:1; background:var(--bg3); border-radius:2px; height:24px; position:relative; overflow:hidden;">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;padding:0 0.5rem;gap:0.5rem;">
+        <div style="width:${Math.max(4, pct)}%;height:12px;background:${color};border-radius:1px;transition:width 1s ease;"></div>
+        <span style="font-family:var(--mono);font-size:0.65rem;color:${color};">Δr = +${delta.toFixed(2)}</span>
+      </div>
+    </div>
+    <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);width:80px;text-align:right;flex-shrink:0;">
+      HC:${r_hc.toFixed(2)} SCZ:${r_scz.toFixed(2)}
+    </div>
+  `;
+  resultBars.appendChild(div);
+});
+
+// ── SCROLL FADE IN ────────────────────────────────────────────────────────
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// ── NAV ACTIVE SECTION ────────────────────────────────────────────────────
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+
+const navObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(a => a.classList.remove('current'));
+      const activeLink = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+      if (activeLink) activeLink.classList.add('current');
+    }
+  });
+}, { threshold: 0.4 });
+
+sections.forEach(s => navObserver.observe(s));
+</script>
+</body>
+</html>
